@@ -125,7 +125,12 @@ STATICFILES_DIR=[STATIC_DIR]
 MEDIA_URL='media/'
 MEDIA_ROOT= BASE_DIR / "media"
 
+LOGIN_URL = '/accounts/login/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
