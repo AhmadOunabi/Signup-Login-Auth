@@ -25,7 +25,8 @@ from django.contrib.auth import login , logout
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('register/', include('registration.urls') ),
-    path('login/', views.user_login , name='user_login'  ),
+    path('login/', views.user_login , name='user_login'),
+    path('faker/', views.user_faker , name='user_faker'),
 ]
 
 

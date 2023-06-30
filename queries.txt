@@ -1,0 +1,183 @@
+    To get all the data
+
+>>> Table1.objects.all()
+
+    We can limit the output using below -
+
+>>> Table1.objects.all()[0:5]
+
+    To get particular fields from data
+
+>>> Table1.objects.values(‘field1’, ‘field2’, ‘field3’)
+The pk lookup shortcut
+
+For convenience, Django provides a pk lookup shortcut, which stands for “primary key”.
+
+In the example Blog model, the primary key is the id field, so these three statements are equivalent:
+
+    >>> Blog.objects.get(id__exact=14) # Explicit form
+    >>> Blog.objects.get(id=14) # __exact is implied
+    >>> Blog.objects.get(pk=14) # pk implies id__exact
+
+To get data based on filters
+
+You can use any query expression with get(), just like with filter().
+
+Note that there is a difference between using get(), and using filter() with a slice of [0]. If there are no results that match the query, get() will raise a DoesNotExcept exception. This exception is an attribute of the model class that the query is being performed on - so in the code above, if there is no Entry object with a primary key of 1, Django will raise Entry.DoesNotExist
+
+Similarly, Django will complain if more than one item matches the get() query. In this case, it will raise MutipleObjectsReturned, which again is an attribute of the model class itself.
+
+    For exact search
+
+>>> Table1.objects.filter(name__exact=”medium”)
+
+    For case sensitive search
+
+>>> Table1.objects.filter(name__iexact=”medium”)
+
+It would match ‘Medium’ , ‘meDium’ etc
+
+    For Containment ()
+
+>>> Table1.objects.filter(name__contains=”medium”)
+
+    ‘__startswith’ to check the start of the string
+
+>>> Table1.objects.filter(name__startswith=”a”)
+
+    ‘__endswith’ to check the end of the string
+
+>>> Table1.objects.filter(name__endswith=”v”)
+Relational operators
+
+    gt -Greater than.
+
+    gte -Greater than or equal to.
+
+    lt -Less than.
+
+    lte -Less than or equal to.
+
+>>> Table1.objects.filter(age__gt=10)
+
+>>> Table1.objects.filter(age__gte=10)
+
+>>> Table1.objects.filter(age__lt=10)
+
+>>> Table1.objects.filter(age__lte=10)
+exists()
+
+The exists() method is used to check the result of the query. Returns True if the queryset contains any results, and False if not.
+
+    >>>User.objects.filter(age__gt=10).values(‘id’,’age’).exists()
+
+Exclude
+
+To exclude particular id from the result
+
+    >>> Table1.objects.exclude(id=1)
+
+SQL ‘IN’ with Django ORM
+
+‘__in’ is used to filter on multiple values.
+
+    >>> User.objects.filter(id__in=[1,2])
+
+Group By
+
+The aggregate() function is used to perform aggregation operations like sum, average, min, max, etc.
+
+>>> User.objects.aggregate(Sum('age'))
+{'age__sum': 75}
+
+>>> User.objects.aggregate(Avg('age'))
+{'age__avg': 25.0}
+
+>>> User.objects.aggregate(Max('age'))
+{'age__max': 30}
+
+>>> User.objects.aggregate(Min('age'))
+{'age__min': 20}
+
+The aggregate() function works on the whole dataset only. Use annotate() instead of aggregate() if you want to apply Group by
+
+It will give you sum of age with respect to each city in the data
+
+    >>> User.objects.values(‘city’).annotate(Sum(‘age’))
+
+Order By
+
+    Ascending Order
+
+>>> user.objects.all().order_by(‘age’)
+
+    Descending Order
+
+>>> user.objects.all().order_by(‘-age’)
+Complex filters with Q objects
+
+Q objects are used for AND, OR and NOT operations. Q objects provide complete control over the where clause of the query.
+
+    AND
+
+    ‘&’ is used for AND operation between 2 Q expressions.
+
+>>> User.objects.filter(Q(city=’city1') & Q(age=25)).values(‘id’,’city’,’age’)
+
+    OR
+
+    ‘|’ is used for OR operation between 2 Q expressions.
+
+>>> User.objects.filter(Q(city=’city1') | Q(age=25)).values(‘id’,’city’,’age’)
+
+    NOT
+
+    ‘~’ is used for OR operation between 2 Q expressions.
+
+>>> User.objects.filter(Q(city=’city1') & ~Q(age=25)).values(‘id’,’city’,’age’)
+Filter based on 2 related models
+
+We use double underscore __ to call field of other model and perform filters and query based on that
+
+Let say, User model has field location mapped ( one-to-one or many-to-many or one-to-many) with Location model having city as field
+
+    > User.objects.filter(location__city__iexact=’Delhi’).values(‘id’,’location__city’)
+
+F() Expressions
+
+In the Django QuerySet API, F() expressions are used to refer to model field values directly in the database.
+
+If you want to compare the value of a model field with another field on the same model F() is used
+
+    >>> User.objects.annotate(new_age=F(‘age’)*2).values(’age’,’new_age’)
+
+We can also use F() expression in the filter.
+
+    >>> User.objects.filter(id__lt=F(‘age’)).values(‘id’,’age’)
+
+Update values
+
+Performs an SQL update query for the specified fields, and returns the number of rows matched (which may not be equal to the number of rows updated if some rows already have the new value).
+
+For example, multiple age column value with 2.
+
+    >>> User.objects.update(age=F('age')*2)
+
+We can update a single object also.
+
+    >>> user=User.objects.get(id=1)
+    >>> user.age =100
+    >>> user.save()
+
+Delete object
+
+Performs an SQL delete query on all rows in the query set and returns the number of objects deleted and a dictionary with the number of deletions per object type.
+
+    Delete a single object
+
+>>> user=User.objects.get(id=1)
+>>> user.delete()
+
+    Delete multiple objects
+
+>>> User.objects.all().delete()

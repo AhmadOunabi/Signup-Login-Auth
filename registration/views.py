@@ -1,4 +1,7 @@
 from django.shortcuts import render
+from django.contrib.auth.models import User
+from .models import Registration
+from faker import Faker
 from .forms import RegistrationForm
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
@@ -36,3 +39,23 @@ def user_login(request):
             return HttpResponse('Someone tried to login username:{} , password:{}'.format(user, password))
     else:
         return render(request, 'registration/login_user.html',{})
+
+def user_faker(request):
+    User.objects.all().delete()
+    Registration.objects.all().delete()
+    for i in range(10):
+        fake = Faker()
+        username1=fake.name()
+        list=username1.split()
+        username=username1.replace(' ','_').lower()
+        user=User.objects.create_user(
+                                    username=username,
+                                    first_name=list[0],
+                                    last_name=list[1],
+                                    email='{}@example.com'.format(username),
+                                    password='password1234')
+        registration=Registration.objects.create(user=user,
+                                                name=username1,
+                                                email='{}@example.com'.format(username),
+                                                password='password1234')
+    return HttpResponse('Users are Created successfully')
