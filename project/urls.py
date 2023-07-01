@@ -27,6 +27,8 @@ urlpatterns = [
     path('register/', include('registration.urls') ),
     path('login/', views.user_login , name='user_login'),
     path('faker/', views.user_faker , name='user_faker'),
+    path('charts/',views.charts_view , name='charts_view'),
+    path('plotly/',views.charts_plotly , name='charts_plotly'),
 ]
 
 

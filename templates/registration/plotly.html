@@ -1,0 +1,23 @@
+<!-- Include the necessary Plotly library -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- Create a container for the first chart -->
+<div id="chartA"></div>
+<a type="button" href="http://127.0.0.1:8000/charts/">Go to chartsjs</a>
+
+<!-- Create a container for the second chart -->
+
+<script>
+    // Retrieve the ratios from the server-side context
+    const ratioA = {{ ratio_A }};
+    const ratioE = {{ ratio_E }};
+
+    // Create the first chart
+    const dataA = [{
+        values: [ratioA, ratioE],
+        labels: ['Names starting with A', 'Names starting with E'],
+        type: 'pie'
+    }];
+
+    Plotly.newPlot('chartA', dataA);
+</script>

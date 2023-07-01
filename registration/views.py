@@ -41,9 +41,9 @@ def user_login(request):
         return render(request, 'registration/login_user.html',{})
 
 def user_faker(request):
-    User.objects.all().delete()
-    Registration.objects.all().delete()
-    for i in range(10):
+    # User.objects.all().delete()
+    # Registration.objects.all().delete()
+    for i in range(1000):
         fake = Faker()
         username1=fake.name()
         list=username1.split()
@@ -59,3 +59,40 @@ def user_faker(request):
                                                 email='{}@example.com'.format(username),
                                                 password='password1234')
     return HttpResponse('Users are Created successfully')
+
+
+def charts_view(request):
+    names_start_A=Registration.objects.filter(name__startswith='A').count()
+    names_start_E=Registration.objects.filter(name__startswith='E').count()
+    names_start_C=Registration.objects.filter(name__startswith='C').count()
+    total_names=Registration.objects.all().count()
+    
+    ##user_list##
+    orderd_users=User.objects.all().order_by('date_joined')[0:10]
+    
+    
+    ratio_A= (names_start_A  / total_names)*100 if total_names > 0 else 0
+    ratio_E= (names_start_E  / total_names)*100 if total_names > 0 else 0
+    ratio_C= (names_start_C  / total_names)*100 if total_names > 0 else 0
+    
+    context={'ratio_A':ratio_A, 'ratio_E':ratio_E,'ratio_C':ratio_C,'orderd_users':orderd_users}
+    
+    return render(request,'registration/charts.html', context)
+
+
+def charts_plotly(request):
+    names_start_A=Registration.objects.filter(name__startswith='A').count()
+    names_start_E=Registration.objects.filter(name__startswith='E').count()
+    names_start_C=Registration.objects.filter(name__startswith='C').count()
+    total_names=Registration.objects.all().count()
+    
+    ##user_list##
+    #orderd_users=User.objects.all().order_by('date_joined')[0:10]
+    
+    ratio_A= (names_start_A  / total_names)*100 if total_names > 0 else 0
+    ratio_E= (names_start_E  / total_names)*100 if total_names > 0 else 0
+    ratio_C= (names_start_C  / total_names)*100 if total_names > 0 else 0
+    
+    context={'ratio_A':ratio_A, 'ratio_E':ratio_E,'ratio_C':ratio_C }
+    
+    return render(request,'registration/plotly.html', context)
