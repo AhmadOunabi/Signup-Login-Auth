@@ -24,7 +24,7 @@
                     {% for user in orderd_users %}
                     {% csrf_token %}
                   <tr>
-                    <td>{{user.last_name}}</td>
+                    <td>{{user.first_name}}</td>
                     <td>{{user.email}}</td>
                   </tr>
                     {% endfor %}
